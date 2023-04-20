@@ -52,8 +52,6 @@ def one_step_adaptive_spectral_clustering(data, num_clusters, k_neighbors=10):
 
     # Select the k eigenvectors corresponding to the k smallest eigenvalues
     H_hat = eigvecs_hat[:, :num_clusters]
-
-    # Normalize rows of H_hat (optional)
     epsilon = 1e-8
     H_hat_norm = H_hat / (np.linalg.norm(H_hat, axis=1)
                           [:, np.newaxis] + epsilon)
