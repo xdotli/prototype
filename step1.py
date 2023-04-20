@@ -31,10 +31,12 @@ def solver_z(z, u, c, lambda_, p, gamma, rho):
                 equation = Eq(lambda_ * p * z_aim ** (p-1) + gamma + (1/rho) * (z_aim - c[i][j]) + u[i][j],0)
             else:
                 equation = Eq(lambda_ * p * z_aim ** (p-1) + (1/rho) * (z_aim - c[i][j]) + u[i][j],0)
-            sol = solve(equation)
-            z_new[i][j] = sol[0]
+            sol = solve(equation,z_aim)
+            z_new[i][j] = np.abs(sol[0])
+            print(i,j)
             #print(z_new)
     return z_new
+
 
 
 
@@ -66,7 +68,7 @@ def admm(X, lam, p, rho, gamma, alpha, tol=1e-6, max_iter=1000):
     return C, Z, U
 
 # Example usage
-X = np.random.rand(100, 100)
+X = np.random.rand(2, 2)
 lam = 1
 p = 0.8
 rho = 1.0
