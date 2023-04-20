@@ -28,8 +28,6 @@ def one_step_adaptive_spectral_clustering(data, num_clusters, k_neighbors=10):
 
     # Select the k eigenvectors corresponding to the k smallest eigenvalues
     H = eigvecs[:, :num_clusters]
-
-    # Normalize rows of H (optional)
     H_norm = H / np.linalg.norm(H, axis=1)[:, np.newaxis]
 
     # Sort the indices of H_norm by their distance
