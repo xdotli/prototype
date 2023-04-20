@@ -1,3 +1,4 @@
+from sklearn.metrics import normalized_mutual_info_score, adjusted_rand_score
 from scipy.optimize import linear_sum_assignment
 import numpy as np
 from scipy.spatial.distance import pdist, squareform
@@ -54,7 +55,7 @@ scaler = StandardScaler()
 x_train = scaler.fit_transform(x_train.astype(np.float64))
 
 # Select a small subset of the data
-sample_size = 500
+sample_size = 2000
 indices = np.random.choice(len(x_train), sample_size, replace=False)
 x_train_subset = x_train[indices]
 y_train_subset = y_train[indices]
@@ -73,3 +74,10 @@ print(conf_matrix)
 row_ind, col_ind = linear_sum_assignment(-conf_matrix)
 accuracy = conf_matrix[row_ind, col_ind].sum() / sample_size
 print("Accuracy:", accuracy)
+
+# Compute NMI and ARI
+nmi = normalized_mutual_info_score(y_train_subset, labels)
+ari = adjusted_rand_score(y_train_subset, labels)
+
+print("Normalized Mutual Information (NMI):", nmi)
+print("Adjusted Rand Index (ARI):", ari)
