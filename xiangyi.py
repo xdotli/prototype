@@ -2,11 +2,12 @@ from scipy.optimize import linear_sum_assignment
 import numpy as np
 from scipy.spatial.distance import pdist, squareform
 from sklearn.cluster import KMeans
-from scipy.sparse.linalg import eigsh
-
+from scipy.sparse.linalg import lobpcg
+from scipy.sparse import csr_matrix
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import confusion_matrix
 import tensorflow as tf
 from tensorflow.keras.datasets import mnist
-from sklearn.preprocessing import StandardScaler
 
 
 def similarity_matrix(data, sigma=1.0):
@@ -20,35 +21,28 @@ def laplacian_matrix(similarity_matrix):
 
 
 def spectral_clustering(data, num_clusters, sigma=1.0):
-    # Step 1: Construct the similarity matrix
     S = similarity_matrix(data, sigma)
-
-    # Step 2: Compute the Laplacian matrix
     L = laplacian_matrix(S)
+    L = csr_matrix(L)
 
-    # Step 3: Compute the eigenvalues and eigenvectors of L
-    eigenvalues, eigenvectors = eigsh(L, k=num_clusters, which='SM')
+    # Random initial guess for eigenvectors
+    np.random.seed(0)
+    X = np.random.rand(L.shape[0], num_clusters)
 
-    # Step 4: Select the k eigenvectors corresponding to the k smallest eigenvalues
+    # Compute the eigenvalues and eigenvectors of L
+    eigenvalues, eigenvectors = lobpcg(L, X, largest=False)
+
+    # Select the k eigenvectors corresponding to the k smallest eigenvalues
     X = eigenvectors
 
-    # Step 5: Normalize rows of X (optional)
+    # Normalize rows of X (optional)
     X_norm = X / np.linalg.norm(X, axis=1)[:, np.newaxis]
 
-    # Step 6: Cluster the data using k-means
+    # Cluster the data using k-means
     kmeans = KMeans(n_clusters=num_clusters).fit(X_norm)
 
-    # Step 7: Return the cluster labels
+    # Return the cluster labels
     return kmeans.labels_
-
-
-# Example usage
-data = np.array([[1, 1], [1, 2], [2, 1], [2, 2],
-                [8, 8], [8, 9], [9, 8], [9, 9]])
-num_clusters = 2
-
-labels = spectral_clustering(data, num_clusters)
-print(labels)
 
 
 # Load and preprocess the MNIST dataset
