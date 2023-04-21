@@ -1,3 +1,5 @@
+from sklearn.manifold import TSNE
+import matplotlib.pyplot as plt
 from scipy.sparse.linalg import eigsh
 from sklearn.metrics import confusion_matrix, classification_report, normalized_mutual_info_score, adjusted_rand_score
 import tensorflow as tf
@@ -52,13 +54,17 @@ def one_step_adaptive_spectral_clustering2(X, num_clusters, k_nearest_neighbors,
     return labels
 
 
-def one_step_adaptive_spectral_clustering(data, num_clusters, k_neighbors=10):
+def one_step_adaptive_spectral_clustering(data, num_clusters, k_neighbors=10, sigma=1.0):
     # Compute the similarity matrix
-    sigma = 1.0
     S = similarity_matrix(data, sigma)
 
-    # Compute the Laplacian matrix
-    L = laplacian_matrix(S)
+    # # Compute the Laplacian matrix
+    # L = laplacian_matrix(S)
+
+    # Compute the normalized Laplacian matrix
+    D = np.diag(np.sum(S, axis=1))
+    D_inv_sqrt = np.diag(1 / np.sqrt(np.diagonal(D)))
+    L = np.eye(data.shape[0]) - np.dot(D_inv_sqrt, np.dot(S, D_inv_sqrt))
 
     # Perform eigendecomposition on the Laplacian matrix
     eigvals, eigvecs = np.linalg.eigh(L)
@@ -129,3 +135,19 @@ ari = adjusted_rand_score(y_train_subset, labels)
 
 print("Normalized Mutual Information (NMI):", nmi)
 print("Adjusted Rand Index (ARI):", ari)
+
+
+# Reduce dimensionality to 2D
+tsne = TSNE(n_components=2, random_state=42)
+x_train_subset_2d = tsne.fit_transform(x_train_subset)
+
+# Create a scatter plot
+plt.figure(figsize=(12, 8))
+for i in range(num_clusters):
+    cluster_indices = labels == i
+    plt.scatter(x_train_subset_2d[cluster_indices, 0],
+                x_train_subset_2d[cluster_indices, 1], label=f"Cluster {i}")
+
+plt.title("Clustering results visualized using t-SNE")
+plt.legend()
+plt.show()
