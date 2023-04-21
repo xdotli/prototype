@@ -7,7 +7,7 @@ def gradient_descent_U(X, U, V, alpha, lam):
     return U_new
 
 def gradient_descent_V(X, U, V, alpha, lam):
-    n = V.shape[0]
+
     V_new = V - alpha * (2 * dot(U.T, dot(X.T, dot(X, dot(U,V)))) + lam*V)
     return V_new
 
@@ -16,8 +16,8 @@ def normalize(X):
 
 def admm(X, lam, alpha, tol=1e-6, max_iter=1000):
     n = X.shape[0]
-    U = np.random.randint(low = 0,high = 10, size = (n, n))
-    V = np.random.randint(low = 0,high = 10, size = (n, n))
+    U = np.random.randint(low = 0, high = 100, size = (n, n)) *0.01
+    V = np.random.randint(low = 0, high = 100, size = (n, n)) *0.01
 
     for k in range(max_iter):
         # u-update
@@ -140,8 +140,8 @@ mnist = tf.keras.datasets.mnist
 
 # Preprocess the dataset
 scaler = MinMaxScaler()
-X_train = X_train.reshape(-1, 28 * 28)
-X_train = scaler.fit_transform(X_train)
+X_train = X_train.reshape(60000,-1)
+X_train[np.where(X_train==0)]= 1
 
 # Use a subset of the dataset
 subset_size = 784
@@ -158,10 +158,11 @@ c = len(np.unique(y_train_subset))
 # n = 100
 #X = normalize(X)
 lam = 1
-alpha = 0.000001
+alpha = 0.00000001
 
 U, V = admm(X, lam, alpha, max_iter=2)
 C = dot(U,V.T)
+print("x:", X[:10][:10])
 print("C:",C)
 
 # Step2
