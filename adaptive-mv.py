@@ -67,7 +67,7 @@ def create_views(X, n_component):
 (X_train, y_train), (X_test, y_test) = mnist.load_data()
 
 # Use a subset of MNIST data
-n_samples = 1000
+n_samples = 000
 X_train = X_train[:n_samples].reshape(n_samples, -1)
 X_train = X_train.astype(np.float32) / 255.0
 

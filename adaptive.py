@@ -10,7 +10,7 @@ from sklearn.decomposition import PCA
 mnist = fetch_openml('mnist_784')
 X = mnist.data.values / 255.0
 y = mnist.target.astype(int).values
-n_samples = 1000
+n_samples = 4000
 indices = np.random.choice(X.shape[0], n_samples, replace=False)
 X, y = X[indices], y[indices]
 

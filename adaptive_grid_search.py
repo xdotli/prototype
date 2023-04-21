@@ -15,7 +15,7 @@ from sklearn.model_selection import GridSearchCV
 mnist = fetch_openml('mnist_784')
 X = mnist.data.values / 255.0
 y = mnist.target.astype(int).values
-n_samples = 2000
+n_samples = 1000
 indices = np.random.choice(X.shape[0], n_samples, replace=False)
 X, y = X[indices], y[indices]
 
@@ -109,9 +109,9 @@ estimator = AdaptiveSpectralClustering()
 
 # Set up the parameter grid for the grid search
 param_grid = {
-    'k': [3, 5, 7, 9],
+    'k': [9, 11, 13, 15],
     'c': [10],
-    'beta': [0.5, 1.0, 1.5, 2.0]
+    'beta': [0.01, 0.05, 0.1, 0.3]
 }
 
 # Define a custom scoring function for GridSearchCV
